@@ -3,63 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minecraft Tu Tiên Thế Giới  - Launcher</title>
+    <title>Minecraft Tu Tiên - Official Website</title>
     <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #1a1a1a;
             color: #ffffff;
-            text-align: center;
-            padding: 50px 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            padding: 20px;
         }
+
+        /* Video nền full màn hình */
+        #video-background {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -100;
+            object-fit: cover;
+            filter: brightness(40%); /* Làm tối video một chút để nổi bật chữ */
+        }
+
+        /* Container làm mờ kính xuyên thấu (Glassmorphism) */
         .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #2d2d2d;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            border: 2px solid #5c8a32;
+            max-width: 650px;
+            width: 100%;
+            background: rgba(25, 25, 25, 0.65);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 40px 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            animation: fadeIn 1.5s ease;
         }
-        h1 { color: #5c8a32; margin-bottom: 10px; }
-        p { color: #aaaaaa; font-size: 16px; }
-        .btn-box { margin: 30px 0; }
+
+        h1 {
+            color: #4cd137;
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(76, 209, 55, 0.5);
+        }
+
+        p {
+            color: #e1b12c;
+            font-size: 18px;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        .btn-box {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
         .btn {
-            display: inline-block;
-            background-color: #5c8a32;
-            color: white;
-            padding: 15px 30px;
+            display: block;
+            width: 100%;
+            padding: 16px;
             font-size: 18px;
             font-weight: bold;
+            color: white;
             text-decoration: none;
-            border-radius: 5px;
-            margin: 10px;
-            transition: 0.3s;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            text-transform: uppercase;
         }
-        .btn:hover { background-color: #476b27; transform: scale(1.05); }
-        .btn-tool { background-color: #3a6073; }
-        .btn-tool:hover { background-color: #2b4c5e; }
-        .footer { margin-top: 40px; font-size: 12px; color: #666; }
+
+        .btn-launcher {
+            background: linear-gradient(135deg, #4cd137, #44bd32);
+            border: 1px solid #4cd137;
+        }
+        .btn-launcher:hover {
+            background: linear-gradient(135deg, #44bd32, #4cd137);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(76, 209, 55, 0.4);
+        }
+
+        .btn-tool {
+            background: linear-gradient(135deg, #00a8ff, #0097e6);
+            border: 1px solid #00a8ff;
+        }
+        .btn-tool:hover {
+            background: linear-gradient(135deg, #0097e6, #00a8ff);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 168, 255, 0.4);
+        }
+
+        blockquote {
+            background: rgba(255, 234, 167, 0.1);
+            border-left: 4px solid #f1c40f;
+            padding: 15px;
+            border-radius: 4px;
+            font-size: 14px;
+            text-align: left;
+            line-height: 1.6;
+        }
+
+        /* Nút điều khiển nhạc bay lơ lửng */
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+            z-index: 999;
+        }
+        .music-control:hover { background: rgba(0, 0, 0, 0.9); transform: scale(1.05); }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
+<video autoplay loop muted playsinline id="video-background">
+    <source src="background.mp4" type="video/mp4">
+</video>
+
+<audio id="bg-music" loop>
+    <source src="music.mp3" type="video/mp3">
+</audio>
+
+<button class="music-control" onclick="toggleMusic()">
+    <span id="music-icon">🎵</span> <span id="music-text">Bật Nhạc Nền</span>
+</button>
+
 <div class="container">
     <h1>MINECRAFT TU TIÊN THẾ GIỚI</h1>
-    <p>Chào mừng đạo hữu! Tải ngay Launcher phía dưới để bắt đầu hành trình tu tiên.</p>
+    <p>⚡ HÀNH TRÌNH ĐỘ KIẾP THÀNH TIÊN BẮT ĐẦU TỪ ĐÂY ⚡</p>
     
     <div class="btn-box">
-        <a href="https://github.com/turkid2003-dev/webgame/releases/download/v1.0/MinecraftLauncher.Setup.1.0.0.exe" class="btn" target="_blank">🚀 Tải Launcher </a>
-        
-        <a href="https://github.com/turkid2003-dev/webgame/releases/download/v1.0/CSL.Skin.Installer.exe" class="btn btn-tool" target="_blank">🛠️ Tải Skin Tool</a>
+        <a href="LINK_TAI_LAUNCHER_CỦA_BẠN" class="btn btn-launcher" target="_blank">🚀 Tải Launcher Tu Tiên</a>
+        <a href="LINK_TAI_TOOL_CỦA_BẠN" class="btn btn-tool" target="_blank">🛠️ Tải Skin Tool</a>
     </div>
 
     <blockquote>
-        📌 <strong>Lưu ý:</strong> Nếu Windows hiện cảnh báo khi chạy file, hãy bấm "More info" -> "Run anyway" nhé. Hàng cây nhà lá vườn an toàn 100%!
+        📌 <strong> đạo hữu:</strong> Khi chạy Launcher, nếu Windows hiện cảnh báo nguy hiểm (SmartScreen), đừng hoảng hốt! Hãy bấm vào <strong>"More info"</strong> rồi chọn <strong>"Run anyway"</strong> là vào game quẩy bình thường nhé.
     </blockquote>
 </div>
 
-<div class="footer">Dự án được phát triển bởi Admin TanMuc</div>
+<script>
+    const music = document.getElementById('bg-music');
+    const musicText = document.getElementById('music-text');
+    const musicIcon = document.getElementById('music-icon');
+
+    function toggleMusic() {
+        if (music.paused) {
+            music.play();
+            musicText.innerText = "Tắt Nhạc Nền";
+            musicIcon.innerText = "⏸️";
+        } else {
+            music.pause();
+            musicText.innerText = "Bật Nhạc Nền";
+            musicIcon.innerText = "🎵";
+        }
+    }
+</script>
 
 </body>
 </html>
